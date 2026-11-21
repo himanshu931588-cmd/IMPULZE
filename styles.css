@@ -7,7 +7,7 @@
   --gold-glow: rgba(255, 220, 82, 0.45);
   --coral-accent: #ff5353;
   --coral-glow: rgba(255, 83, 83, 0.4);
-  --dark-glass: rgba(18, 18, 24, 0.85);
+  --dark-glass: rgba(14, 15, 20, 0.88);
   --dark-border: rgba(255, 255, 255, 0.14);
   --text-white: #ffffff;
   --text-dim: #cfd4e2;
@@ -63,7 +63,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, rgba(11, 12, 16, 0.15) 30%, rgba(11, 12, 16, 0.65) 95%),
+  background: radial-gradient(circle at center, rgba(11, 12, 16, 0.12) 30%, rgba(11, 12, 16, 0.65) 95%),
               linear-gradient(180deg, rgba(11, 12, 16, 0.55) 0%, transparent 22%, transparent 75%, rgba(11, 12, 16, 0.75) 100%);
   pointer-events: none;
 }
@@ -101,7 +101,7 @@ body {
 /* --- 1. Top Navigation Bar --- */
 .techfest-topbar {
   position: fixed;
-  top: 18px;
+  top: 16px;
   left: 0;
   width: 100%;
   display: flex;
@@ -152,68 +152,69 @@ body {
   vertical-align: super;
 }
 
-/* Center Angular Sci-Fi HUD Menu */
-.center-hud-menu {
-  position: relative;
+/* Center Segmented Grid Navbar Menu (Exactly matching user image) */
+.segmented-grid-navbar {
   display: flex;
-  align-items: center;
-  gap: 32px;
-  padding: 10px 42px;
-  background: rgba(30, 31, 38, 0.88);
-  backdrop-filter: blur(12px);
+  align-items: stretch;
+  background: rgba(12, 13, 18, 0.94);
+  backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.16);
-  /* Techfest signature angular chamfered polygon container */
-  clip-path: polygon(
-    18px 0%, calc(100% - 18px) 0%, 
-    100% 18px, 100% calc(100% - 14px), 
-    calc(100% - 14px) 100%, 14px 100%, 
-    0% calc(100% - 14px), 0% 18px
-  );
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.03);
+  overflow: hidden;
 }
 
-.center-hud-menu::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 18px;
-  right: 18px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-}
-
-.hud-menu-item {
+.segmented-nav-item {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 24px;
   text-decoration: none;
   font-family: var(--font-main);
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 2.2px;
-  color: #ffffff;
-  text-transform: uppercase;
-  transition: color 0.2s ease, text-shadow 0.2s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #d2d6e4;
+  border-right: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  transition: all 0.22s ease;
   cursor: pointer;
 }
 
-.hud-menu-item:hover {
-  color: var(--gold-primary);
-  text-shadow: 0 0 10px var(--gold-glow);
+.segmented-nav-item:last-child {
+  border-right: none;
 }
 
-.hud-badge-tag {
+.segmented-nav-item:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.segmented-nav-item.active {
+  color: var(--gold-primary);
+  background: rgba(255, 220, 82, 0.1);
+}
+
+.segmented-nav-item::after {
+  content: '';
   position: absolute;
-  top: -14px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.56rem;
-  font-weight: 800;
-  letter-spacing: 1.2px;
-  color: var(--gold-primary);
-  white-space: nowrap;
-  text-shadow: 0 0 8px rgba(255, 220, 82, 0.6);
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: var(--gold-primary);
+  box-shadow: 0 0 8px var(--gold-glow);
+  transition: width 0.25s ease;
 }
 
-/* Right Top Button (-> SIGN IN / JOIN US) */
+.segmented-nav-item:hover::after,
+.segmented-nav-item.active::after {
+  width: 100%;
+}
+
+/* Right Top Button (-> JOIN US) */
 .topbar-signin-btn {
   display: inline-flex;
   align-items: center;
@@ -626,7 +627,7 @@ body {
   padding: 2px 0 4px;
 }
 
-/* --- 6. Interactive Modals (Workshops, Competitions, Contact) --- */
+/* --- 6. Interactive Modals (Workshops, Competitions, Team, Gallery, Contact) --- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -637,8 +638,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
@@ -652,7 +653,9 @@ body {
 .modal-content-card {
   position: relative;
   width: 90%;
-  max-width: 580px;
+  max-width: 620px;
+  max-height: 85vh;
+  overflow-y: auto;
   background: #10121a;
   border: 1px solid var(--gold-primary);
   border-radius: 16px;
@@ -676,18 +679,92 @@ body {
   color: var(--coral-accent);
 }
 
+/* Team Grid inside Modal */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.team-member-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 16px 12px;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.team-member-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold-primary);
+}
+
+.team-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 220, 82, 0.15);
+  border: 2px solid var(--gold-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  margin: 0 auto 10px;
+}
+
+.team-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 2px;
+}
+
+.team-role {
+  font-size: 0.75rem;
+  color: var(--gold-primary);
+}
+
+/* Gallery Grid inside Modal */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.gallery-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px;
+  text-align: center;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.gallery-caption {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .techfest-topbar {
     padding: 0 16px;
   }
-  .center-hud-menu {
-    gap: 16px;
-    padding: 8px 24px;
-  }
-  .hud-menu-item {
-    font-size: 0.72rem;
-    letter-spacing: 1px;
+  .segmented-nav-item {
+    padding: 8px 14px;
+    font-size: 0.85rem;
   }
   .cards-viewport-container {
     flex-direction: column;
@@ -707,7 +784,7 @@ body {
   .floating-left-dock, .floating-right-dock {
     display: none;
   }
-  .center-hud-menu {
+  .segmented-grid-navbar {
     display: none;
   }
 }

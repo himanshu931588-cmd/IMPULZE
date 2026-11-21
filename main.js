@@ -65,13 +65,8 @@ function initScrollChoreography() {
   const scrollCue = document.getElementById('bottom-scroll-cue');
   const bgVideo = document.getElementById('main-bg-video');
 
-  let isUserScrolling = false;
-  let scrollTimeout = null;
-
   if (bgVideo) {
-    // Ensure video is playing
     bgVideo.play().catch(() => {
-      // Autoplay with sound blocked; already muted so retrying
       bgVideo.muted = true;
       bgVideo.play().catch(() => {});
     });
@@ -87,11 +82,10 @@ function initScrollChoreography() {
       scrollCue.style.opacity = progress > 0.05 ? '0' : '1';
     }
 
-    // Sync video time smoothly to scroll position when scrolling
+    // Sync video time smoothly to scroll position
     if (bgVideo && bgVideo.duration) {
       const targetTime = progress * bgVideo.duration;
-      // Gently seek video towards targetTime
-      if (Math.abs(bgVideo.currentTime - targetTime) > 0.3) {
+      if (Math.abs(bgVideo.currentTime - targetTime) > 0.35) {
         bgVideo.currentTime = targetTime;
       }
     }
@@ -111,10 +105,7 @@ function initScrollChoreography() {
     }
   }
 
-  window.addEventListener('scroll', () => {
-    updateScrollState();
-  }, { passive: true });
-
+  window.addEventListener('scroll', updateScrollState, { passive: true });
   updateScrollState();
 }
 
@@ -149,52 +140,78 @@ function initNavigation() {
   const btnEvents = document.getElementById('nav-events');
   const btnContact = document.getElementById('nav-contact');
 
-  const topAbout = document.getElementById('top-menu-about');
-  const topWorkshops = document.getElementById('top-menu-workshops');
-  const topCompetitions = document.getElementById('top-menu-competitions');
+  // Segmented navbar links
+  const topNavHome = document.getElementById('top-nav-home');
+  const topNavTeam = document.getElementById('top-nav-team');
+  const topNavAbout = document.getElementById('top-nav-about');
+  const topNavEvents = document.getElementById('top-nav-events');
+  const topNavGallery = document.getElementById('top-nav-gallery');
 
   const maxScroll = () => document.documentElement.scrollHeight - window.innerHeight;
 
-  if (btnHome) {
-    btnHome.addEventListener('click', (e) => {
-      e.preventDefault();
-      audio.playClick();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+  const scrollToHome = (e) => {
+    if (e) e.preventDefault();
+    audio.playClick();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setActiveNav(topNavHome);
+  };
+
+  const scrollToAbout = (e) => {
+    if (e) e.preventDefault();
+    audio.playClick();
+    window.scrollTo({ top: maxScroll() * 0.42, behavior: 'smooth' });
+    setActiveNav(topNavAbout);
+  };
+
+  function setActiveNav(activeEl) {
+    document.querySelectorAll('.segmented-nav-item').forEach((el) => el.classList.remove('active'));
+    if (activeEl) activeEl.classList.add('active');
   }
 
-  if (btnAbout || topAbout) {
-    const scrollToCards = (e) => {
-      e.preventDefault();
-      audio.playClick();
-      window.scrollTo({ top: maxScroll() * 0.42, behavior: 'smooth' });
-    };
-    if (btnAbout) btnAbout.addEventListener('click', scrollToCards);
-    if (topAbout) topAbout.addEventListener('click', scrollToCards);
-  }
+  if (btnHome) btnHome.addEventListener('click', scrollToHome);
+  if (topNavHome) topNavHome.addEventListener('click', scrollToHome);
+
+  if (btnAbout) btnAbout.addEventListener('click', scrollToAbout);
+  if (topNavAbout) topNavAbout.addEventListener('click', scrollToAbout);
 
   // Modals
+  const teamModal = document.getElementById('modal-team');
+  const galleryModal = document.getElementById('modal-gallery');
   const workshopsModal = document.getElementById('modal-workshops');
   const competitionsModal = document.getElementById('modal-competitions');
   const contactModal = document.getElementById('modal-contact');
 
-  function openModal(modal) {
+  function openModal(modal, navEl) {
     if (!modal) return;
     audio.playClick();
+    if (navEl) setActiveNav(navEl);
     modal.classList.add('open');
   }
 
-  function closeModal(modal) {
-    if (!modal) return;
-    audio.playClick();
-    modal.classList.remove('open');
-  }
+  if (topNavTeam) topNavTeam.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal(teamModal, topNavTeam);
+  });
 
-  // Triggers
-  if (topWorkshops) topWorkshops.addEventListener('click', () => openModal(workshopsModal));
-  if (topCompetitions) topCompetitions.addEventListener('click', () => openModal(competitionsModal));
-  if (btnEvents) btnEvents.addEventListener('click', () => openModal(competitionsModal));
-  if (btnContact) btnContact.addEventListener('click', () => openModal(contactModal));
+  if (topNavGallery) topNavGallery.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal(galleryModal, topNavGallery);
+  });
+
+  if (topNavEvents) topNavEvents.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal(competitionsModal, topNavEvents);
+  });
+
+  if (btnEvents) btnEvents.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal(competitionsModal);
+  });
+
+  if (btnContact) btnContact.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal(contactModal);
+  });
 
   const questionBtn = document.getElementById('btn-question-widget');
   if (questionBtn) questionBtn.addEventListener('click', () => openModal(contactModal));
@@ -229,7 +246,7 @@ function initNavigation() {
   });
 
   // Sound triggers on interactive elements
-  const hoverables = document.querySelectorAll('a, button, .subcard-item, .nav-dock-btn, .social-dock-link');
+  const hoverables = document.querySelectorAll('a, button, .subcard-item, .nav-dock-btn, .social-dock-link, .segmented-nav-item');
   hoverables.forEach((el) => {
     el.addEventListener('mouseenter', () => audio.playHover());
   });
