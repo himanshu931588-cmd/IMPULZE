@@ -1,0 +1,681 @@
+/* ==========================================================================
+   IMPULZE - Exact Techfest.org 3D UI Recreation
+   ========================================================================== */
+
+:root {
+  --gold-primary: #ffdc52;
+  --gold-glow: rgba(255, 220, 82, 0.45);
+  --coral-accent: #ff5353;
+  --coral-glow: rgba(255, 83, 83, 0.4);
+  --dark-glass: rgba(18, 18, 24, 0.82);
+  --dark-border: rgba(255, 255, 255, 0.12);
+  --text-white: #ffffff;
+  --text-dim: #cfd4e2;
+  --font-main: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-tech: 'Orbitron', sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: #0b0c10;
+  color: #ffffff;
+  font-family: var(--font-main);
+  overflow-x: hidden;
+}
+
+body {
+  position: relative;
+  min-height: 280vh; /* Smooth multi-stage scroll journey */
+  margin: 0;
+  cursor: default;
+  overflow-x: hidden;
+}
+
+/* Three.js 3D Background Canvas */
+#webgl-canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+#webgl-canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+/* Atmospheric Vignette */
+.cinematic-vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(circle at center, transparent 45%, rgba(0, 0, 0, 0.6) 98%);
+}
+
+/* --- 1. Top Navigation Bar --- */
+.techfest-topbar {
+  position: fixed;
+  top: 18px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 35px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.topbar-left, .topbar-center, .topbar-right {
+  pointer-events: auto;
+}
+
+/* Left Brand Logo (Angular Techfest Style) */
+.brand-anchor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.brand-glyph {
+  font-family: var(--font-tech);
+  font-size: 2.1rem;
+  font-weight: 900;
+  font-style: italic;
+  color: #ffffff;
+  letter-spacing: -2px;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+}
+
+.brand-glyph .glyph-arrow {
+  color: var(--coral-accent);
+  margin-left: -2px;
+}
+
+.brand-glyph-sub {
+  font-size: 0.6rem;
+  font-style: normal;
+  font-family: var(--font-main);
+  letter-spacing: 2px;
+  color: var(--gold-primary);
+  margin-left: 4px;
+  vertical-align: super;
+}
+
+/* Center Angular Sci-Fi HUD Menu */
+.center-hud-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 10px 42px;
+  background: rgba(30, 31, 38, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  /* Techfest signature angular chamfered polygon container */
+  clip-path: polygon(
+    18px 0%, calc(100% - 18px) 0%, 
+    100% 18px, 100% calc(100% - 14px), 
+    calc(100% - 14px) 100%, 14px 100%, 
+    0% calc(100% - 14px), 0% 18px
+  );
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(255, 255, 255, 0.04);
+}
+
+.center-hud-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 18px;
+  right: 18px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+}
+
+.hud-menu-item {
+  position: relative;
+  text-decoration: none;
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 2.2px;
+  color: #ffffff;
+  text-transform: uppercase;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.hud-menu-item:hover {
+  color: var(--gold-primary);
+  text-shadow: 0 0 10px var(--gold-glow);
+}
+
+.hud-badge-tag {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.56rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: var(--gold-primary);
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(255, 220, 82, 0.6);
+}
+
+/* Right Top Button (-> SIGN IN / JOIN US) */
+.topbar-signin-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 22px;
+  background: rgba(30, 31, 38, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: var(--font-main);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.topbar-signin-btn:hover {
+  border-color: var(--coral-accent);
+  color: var(--coral-accent);
+  box-shadow: 0 0 20px var(--coral-glow);
+  transform: translateY(-2px);
+}
+
+/* --- 2. Floating Left Vertical Nav Dock --- */
+.floating-left-dock {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 24px 14px;
+  background: var(--dark-glass);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--dark-border);
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+}
+
+.nav-dock-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-dock-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke: #ffffff;
+  stroke-width: 1.8;
+  transition: stroke 0.2s ease, transform 0.2s ease;
+}
+
+.nav-dock-label {
+  font-family: var(--font-main);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+}
+
+.nav-dock-btn:hover {
+  transform: scale(1.12);
+}
+
+.nav-dock-btn:hover svg {
+  stroke: var(--gold-primary);
+  filter: drop-shadow(0 0 6px var(--gold-glow));
+}
+
+.nav-dock-btn:hover .nav-dock-label {
+  color: var(--gold-primary);
+}
+
+/* --- 3. Floating Right Vertical Socials Dock --- */
+.floating-right-dock {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 14px;
+  background: var(--dark-glass);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--dark-border);
+  border-radius: 20px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.6);
+}
+
+.social-dock-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  text-decoration: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.social-dock-link svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+  transition: all 0.2s ease;
+}
+
+.social-dock-link:hover {
+  transform: scale(1.22);
+}
+
+.social-dock-link.insta:hover {
+  color: #ff4572;
+  filter: drop-shadow(0 0 8px rgba(255, 69, 114, 0.6));
+}
+
+.social-dock-link.whatsapp {
+  position: relative;
+}
+
+.social-dock-link.whatsapp svg {
+  fill: #25d366;
+  filter: drop-shadow(0 0 5px rgba(37, 211, 102, 0.4));
+}
+
+.social-dock-link.whatsapp:hover svg {
+  fill: #34e778;
+  filter: drop-shadow(0 0 12px rgba(37, 211, 102, 0.8));
+}
+
+/* --- 4. Bottom Elements: SCROLL hint & Floating Question Button --- */
+.bottom-scroll-cue {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-main);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.7);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.scroll-mouse-anim {
+  width: 14px;
+  height: 22px;
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: 7px;
+  position: relative;
+}
+
+.scroll-mouse-anim::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 4px;
+  background: #ffffff;
+  border-radius: 1px;
+  animation: mousePulse 1.6s infinite;
+}
+
+@keyframes mousePulse {
+  0% { transform: translate(-50%, 0); opacity: 1; }
+  100% { transform: translate(-50%, 8px); opacity: 0; }
+}
+
+/* Floating "Have a question?" button bottom-right */
+.floating-question-widget {
+  position: fixed;
+  bottom: 22px;
+  right: 25px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.question-text-hint {
+  font-family: var(--font-main);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.question-action-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--coral-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 20px var(--coral-glow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.question-action-circle:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 30px var(--coral-accent);
+}
+
+/* --- 5. The 3 Majestic Sci-Fi Armor Cards (Scroll-Linked) --- */
+.cards-viewport-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 1140px;
+  padding: 0 20px;
+  z-index: 50;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 28px;
+  pointer-events: none;
+  perspective: 1200px;
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.15);
+}
+
+/* Cards Hidden State (at scroll top) */
+.cards-viewport-container.state-hidden {
+  opacity: 0;
+  transform: translate(-50%, -140%) scale(0.92);
+  pointer-events: none;
+}
+
+/* Cards Visible State (when scrolled into temple view) */
+.cards-viewport-container.state-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  pointer-events: auto;
+}
+
+/* Cards Passed State (when scrolled further into arena) */
+.cards-viewport-container.state-passed {
+  opacity: 0;
+  transform: translate(-50%, -130%) scale(0.94);
+  pointer-events: none;
+}
+
+/* Individual Sci-Fi Card */
+.scifi-armor-card {
+  position: relative;
+  flex: 1;
+  max-width: 340px;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 42px 28px 36px;
+  background: rgba(14, 15, 22, 0.92);
+  backdrop-filter: blur(16px);
+  border-radius: 18px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 0 0 25px rgba(255, 220, 82, 0.12);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+}
+
+/* Exact Golden Sci-Fi Metallic Frame Overlay */
+.scifi-armor-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('public/techfest-assets/sci_fi_border_overlay.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.scifi-armor-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8), 0 0 35px rgba(255, 220, 82, 0.28);
+}
+
+/* Card Content Typography */
+.card-header-wrap {
+  position: relative;
+  z-index: 12;
+  text-align: center;
+}
+
+.gold-card-title {
+  font-family: var(--font-main);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--gold-primary);
+  text-shadow: 0 0 12px rgba(255, 220, 82, 0.5);
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.gold-card-desc {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Card 1 & 3 Action Buttons */
+.card-action-wrap {
+  position: relative;
+  z-index: 12;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.gold-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 36px;
+  background: linear-gradient(180deg, #ffdc52 0%, #e5b922 100%);
+  color: #121216;
+  font-family: var(--font-main);
+  font-size: 0.95rem;
+  font-weight: 800;
+  border-radius: 24px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 20px rgba(255, 220, 82, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gold-pill-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 30px rgba(255, 220, 82, 0.8);
+}
+
+/* Card 2 Sub-Cards (Workshops & Competitions) */
+.subcards-row {
+  position: relative;
+  z-index: 12;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.subcard-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  background: rgba(20, 22, 30, 0.85);
+  border: 1px solid rgba(255, 220, 82, 0.3);
+  border-radius: 12px;
+  padding: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.subcard-item:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 16px rgba(255, 220, 82, 0.4);
+}
+
+.subcard-thumb-img {
+  width: 100%;
+  height: 95px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.subcard-label {
+  font-family: var(--font-main);
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--gold-primary);
+  text-shadow: 0 0 8px rgba(255, 220, 82, 0.5);
+  padding: 2px 0 4px;
+}
+
+/* --- 6. Interactive Modals (Workshops, Competitions, Contact) --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content-card {
+  position: relative;
+  width: 90%;
+  max-width: 580px;
+  background: #10121a;
+  border: 1px solid var(--gold-primary);
+  border-radius: 16px;
+  padding: 36px 30px;
+  box-shadow: 0 0 50px rgba(255, 220, 82, 0.25);
+}
+
+.modal-close-icon {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.modal-close-icon:hover {
+  color: var(--coral-accent);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .techfest-topbar {
+    padding: 0 16px;
+  }
+  .center-hud-menu {
+    gap: 16px;
+    padding: 8px 24px;
+  }
+  .hud-menu-item {
+    font-size: 0.72rem;
+    letter-spacing: 1px;
+  }
+  .cards-viewport-container {
+    flex-direction: column;
+    align-items: center;
+    max-height: 85vh;
+    overflow-y: auto;
+    gap: 16px;
+  }
+  .scifi-armor-card {
+    max-width: 320px;
+    min-height: auto;
+    padding: 30px 20px;
+  }
+}
+
+@media (max-width: 680px) {
+  .floating-left-dock, .floating-right-dock {
+    display: none;
+  }
+  .center-hud-menu {
+    display: none;
+  }
+}

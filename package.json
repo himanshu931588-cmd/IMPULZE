@@ -1,0 +1,19 @@
+{
+  "name": "impulze-techfest-ui",
+  "version": "1.0.0",
+  "description": "IMPULZE - Student-Driven Tech Community 3D Web Portal (Techfest Aesthetic)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "impulze",
+    "techfest",
+    "threejs",
+    "webgl",
+    "tech-community",
+    "student-developers"
+  ],
+  "author": "IMPULZE",
+  "license": "MIT"
+}
