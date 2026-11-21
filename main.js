@@ -1,7 +1,7 @@
 /**
  * IMPULZE Techfest UI - Application Controller
  * Handles scroll choreography, card transitions, 3D card tilt,
- * procedural Web Audio synthesis, and interactive modals.
+ * procedural Web Audio synthesis, interactive modals, and background video sync.
  */
 
 // --- 1. Procedural Web Audio Synthesizer ---
@@ -59,10 +59,23 @@ class TechAudioSynth {
 
 const audio = new TechAudioSynth();
 
-// --- 2. Scroll Choreography for Techfest 3D Cards ---
+// --- 2. Scroll Choreography for Techfest 3D Cards & Video Sync ---
 function initScrollChoreography() {
   const cardsContainer = document.getElementById('cards-viewport');
   const scrollCue = document.getElementById('bottom-scroll-cue');
+  const bgVideo = document.getElementById('main-bg-video');
+
+  let isUserScrolling = false;
+  let scrollTimeout = null;
+
+  if (bgVideo) {
+    // Ensure video is playing
+    bgVideo.play().catch(() => {
+      // Autoplay with sound blocked; already muted so retrying
+      bgVideo.muted = true;
+      bgVideo.play().catch(() => {});
+    });
+  }
 
   function updateScrollState() {
     const scrollY = window.scrollY;
@@ -74,12 +87,21 @@ function initScrollChoreography() {
       scrollCue.style.opacity = progress > 0.05 ? '0' : '1';
     }
 
+    // Sync video time smoothly to scroll position when scrolling
+    if (bgVideo && bgVideo.duration) {
+      const targetTime = progress * bgVideo.duration;
+      // Gently seek video towards targetTime
+      if (Math.abs(bgVideo.currentTime - targetTime) > 0.3) {
+        bgVideo.currentTime = targetTime;
+      }
+    }
+
     if (!cardsContainer) return;
 
     // Techfest Card Animation Thresholds:
     // 0.00 to 0.15: Hidden above in clouds
     // 0.15 to 0.72: Locked into center view for reading & interaction
-    // 0.72 to 1.00: Floats away to reveal deep temple arena & hero
+    // 0.72 to 1.00: Floats away to reveal landscape
     if (progress < 0.15) {
       cardsContainer.className = 'cards-viewport-container state-hidden';
     } else if (progress >= 0.15 && progress <= 0.72) {
@@ -89,7 +111,10 @@ function initScrollChoreography() {
     }
   }
 
-  window.addEventListener('scroll', updateScrollState, { passive: true });
+  window.addEventListener('scroll', () => {
+    updateScrollState();
+  }, { passive: true });
+
   updateScrollState();
 }
 
@@ -221,12 +246,16 @@ document.addEventListener('DOMContentLoaded', () => {
   initCardTilt();
   initNavigation();
 
-  // Unlock Web Audio on first gesture
-  const unlockAudio = () => {
+  // Unlock Web Audio and background video on first gesture
+  const unlockMedia = () => {
     audio.resume();
-    document.removeEventListener('click', unlockAudio);
-    document.removeEventListener('scroll', unlockAudio);
+    const bgVideo = document.getElementById('main-bg-video');
+    if (bgVideo && bgVideo.paused) {
+      bgVideo.play().catch(() => {});
+    }
+    document.removeEventListener('click', unlockMedia);
+    document.removeEventListener('scroll', unlockMedia);
   };
-  document.addEventListener('click', unlockAudio);
-  document.addEventListener('scroll', unlockAudio);
+  document.addEventListener('click', unlockMedia);
+  document.addEventListener('scroll', unlockMedia);
 });
